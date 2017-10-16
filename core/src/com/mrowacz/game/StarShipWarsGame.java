@@ -2,6 +2,7 @@ package com.mrowacz.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -11,9 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.mrowacz.game.entities.Player;
 
-import static com.mrowacz.game.GameSettings.BIT_ROCK;
-import static com.mrowacz.game.GameSettings.BIT_PLAYER;
-import static com.mrowacz.game.GameSettings.PPM;
+import static com.mrowacz.game.GameSettings.*;
 
 public class StarShipWarsGame extends ApplicationAdapter implements InputProcessor {
 
@@ -34,21 +33,7 @@ public class StarShipWarsGame extends ApplicationAdapter implements InputProcess
 		b2dr = new Box2DDebugRenderer();
 
 		// set player
-		player = new Player();
-		BodyDef bdef = new BodyDef();
-		FixtureDef fdef = new FixtureDef();
-		PolygonShape shape = new PolygonShape();
-
-		bdef.position.set(0 / PPM, 0 / PPM);
-		bdef.type = BodyDef.BodyType.DynamicBody;
-		player.setBody(world.createBody(bdef));
-
-		shape.setAsBox(15 / PPM, 15 / PPM);
-		fdef.shape = shape;
-		fdef.filter.categoryBits = BIT_PLAYER;
-		fdef.filter.maskBits = BIT_ROCK;
-		fdef.restitution = 0f;
-		player.getBody().createFixture(fdef).setUserData("player");
+		player = new Player(world);
 
 		// set up main camera
 		float cameraWidth = GameSettings.V_WIDTH / PPM;
@@ -60,6 +45,25 @@ public class StarShipWarsGame extends ApplicationAdapter implements InputProcess
 		// set up box2d cam;
 		b2dCam = new OrthographicCamera();
 		b2dCam.setToOrtho(false, cameraWidth, cameraHeight);
+
+		// set key listener
+		Gdx.input.setInputProcessor(this);
+
+		// boundaries
+		PolygonShape shape = new PolygonShape();
+		FixtureDef fdef = new FixtureDef();
+		BodyDef bdef = new BodyDef();
+
+		bdef.position.set(0 / PPM, 0 / PPM);
+		bdef.type = BodyDef.BodyType.StaticBody;
+		Body body = world.createBody(bdef);
+
+		shape.setAsBox(400 / PPM, 400 / PPM, new Vector2(-40 / PPM , -40 / PPM), 0);
+		fdef.shape = shape;
+		fdef.filter.categoryBits = BIT_BOUNDS;
+		fdef.filter.maskBits = BIT_PLAYER | BIT_ROCK;
+		fdef.restitution = 0f;
+		body.createFixture(fdef).setUserData("rock");
 	}
 
 	@Override
@@ -95,7 +99,11 @@ public class StarShipWarsGame extends ApplicationAdapter implements InputProcess
 
 	// InputProcessor
 	@Override
-	public boolean keyDown(int keycode) {
+	public boolean keyDown(int keycode)
+	{
+		System.out.println("Keycode " + keycode);
+		if (keycode == Input.Keys.UP)
+			player.applyForce(new Vector2(MOVE_FORCE, 0));
 		return false;
 	}
 

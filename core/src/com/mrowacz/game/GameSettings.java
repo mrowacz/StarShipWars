@@ -11,5 +11,8 @@ public class GameSettings {
 
     public static final short BIT_ROCK = 2;
     public static final short BIT_PLAYER = 4;
+    public static final short BIT_BOUNDS = 8;
+
+    public static final float MOVE_FORCE = 500;
 
 }
