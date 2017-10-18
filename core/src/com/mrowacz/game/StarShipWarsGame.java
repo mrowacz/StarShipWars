@@ -10,15 +10,19 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.mrowacz.game.entities.Boundary;
 import com.mrowacz.game.entities.Player;
+
+import java.util.ArrayList;
 
 import static com.mrowacz.game.GameSettings.*;
 
 public class StarShipWarsGame extends ApplicationAdapter implements InputProcessor {
 
 	private World world;
-	private Box2DDebugRenderer b2dr;
 	private Player player;
+	private Boundary boundary;
+	private Box2DDebugRenderer b2dr;
 
 	private OrthographicCamera camera;
 	private OrthographicCamera b2dCam;
@@ -36,8 +40,8 @@ public class StarShipWarsGame extends ApplicationAdapter implements InputProcess
 		player = new Player(world);
 
 		// set up main camera
-		float cameraWidth = GameSettings.V_WIDTH / PPM;
-		float cameraHeight = GameSettings.V_HEIGHT / PPM;
+		float cameraWidth = 2 * GameSettings.V_WIDTH / PPM;
+		float cameraHeight = 2 * GameSettings.V_HEIGHT / PPM;
 
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, cameraWidth, cameraHeight);
@@ -50,20 +54,7 @@ public class StarShipWarsGame extends ApplicationAdapter implements InputProcess
 		Gdx.input.setInputProcessor(this);
 
 		// boundaries
-		PolygonShape shape = new PolygonShape();
-		FixtureDef fdef = new FixtureDef();
-		BodyDef bdef = new BodyDef();
-
-		bdef.position.set(0 / PPM, 0 / PPM);
-		bdef.type = BodyDef.BodyType.StaticBody;
-		Body body = world.createBody(bdef);
-
-		shape.setAsBox(400 / PPM, 400 / PPM, new Vector2(-40 / PPM , -40 / PPM), 0);
-		fdef.shape = shape;
-		fdef.filter.categoryBits = BIT_BOUNDS;
-		fdef.filter.maskBits = BIT_PLAYER | BIT_ROCK;
-		fdef.restitution = 0f;
-		body.createFixture(fdef).setUserData("rock");
+		boundary = new Boundary(world);
 	}
 
 	@Override
