@@ -15,4 +15,7 @@ public class GameSettings {
 
     public static final float MOVE_FORCE = 500;
 
+    public static final float BOUNDARY_SIZE = 600;
+    public static final float BOUNDARY_WIDTH = 10;
+
 }
